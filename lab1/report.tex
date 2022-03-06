@@ -58,11 +58,25 @@ total of 446 characters).
         ECB & 16 \\\hline
         CBC & 15 \\\hline
         CFB & 18 \\\hline
-        OFB & 0 \\\hline
+        OFB & 0  \\\hline
     \end{tabular}
 \end{center}
 
 \question*{Padding}
+\begin{arabicparts}
+    \questionpart{} For the first exercise, I used AES-128-CBC to encrypt texts
+    of length 20, 31, and 32 bytes. The sizes of their respective cipher texts
+    were 32, 32, and 48 bytes. This implies that the block size is 16, and that
+    a plaintext must be strictly less than a multiple of the block size to have
+    a corresponding ciphertext of that size.
+
+    \questionpart{} I chose to use the AES cipher for this exercise. The ECB and
+    CBC modes of encryption required padding. I verified this by comparing the
+    size in bytes of the plaintext and the ciphertext from each mode. CFB and
+    OFB don't require padding because the encryption method is used only to
+    generate pseudo-random bits to be XORed with the message. Therefore, it
+    doesn't require that the message be an integer-multiple of a block size.
+\end{arabicparts}
 
 \question*{Programming using the Crypto Library}
 
