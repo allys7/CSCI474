@@ -49,6 +49,9 @@ int main(void)
                                  ciphertext);
 
         /* Do something useful with the ciphertext here */
+        printf("Initial value is:\n");
+        BIO_dump_fp(stdout, (const char *)iv, 17);
+
         printf("Ciphertext is:\n");
         BIO_dump_fp(stdout, (const char *)ciphertext, ciphertext_len);
 
@@ -61,7 +64,7 @@ int main(void)
 
         /* Show the decrypted text */
         printf("Decrypted text is:\n");
-        printf("%s\n", decryptedtext);
+        BIO_dump_fp(stdout, (const char *)decryptedtext, decryptedtext_len);
 
         return 0;
     }
@@ -84,10 +87,13 @@ int main(void)
         unsigned char decryptedtext[128];
 
         // A 128 bit key
-        unsigned char key[128];
+        unsigned char key[16];
 
         int decryptedtext_len, ciphertext_len;
-        ciphertext_len = strlen(ciphertext);
+        ciphertext_len = 128;
+
+        printf("Initial value is:\n");
+        BIO_dump_fp(stdout, (const char *)iv, 17);
 
         // Do something useful with the ciphertext here
         printf("Ciphertext is:\n");
@@ -109,7 +115,7 @@ int main(void)
             if (word_len < 16)
             {
                 // pad word with spaces
-                while (word_len < 16)
+                while (word_len <= 16)
                 {
                     strncat(line, &space, 1);
                     word_len++;
@@ -146,6 +152,7 @@ int main(void)
 
 void handleErrors(void)
 {
+    fprintf(stderr, "ERROR!\n");
     ERR_print_errors_fp(stderr);
     abort();
 }
@@ -207,6 +214,8 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
     /* Create and initialise the context */
     if (!(ctx = EVP_CIPHER_CTX_new()))
         handleErrors();
+
+    EVP_CIPHER_CTX_set_padding(ctx, 0);
 
     /*
      * Initialise the decryption operation. IMPORTANT - ensure you use a key
