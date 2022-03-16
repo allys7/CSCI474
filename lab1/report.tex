@@ -2,6 +2,8 @@
 \usepackage{subcaption}
 \usepackage{caption}
 \usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
 
 % TODO: replace these with your information
 \newcommand{\hwname}{Ally Smith}
@@ -35,7 +37,6 @@ random `noise,' so no useful information can be derived from the picture.
     Figure 1: Ciphered image
 \end{center}
 
-\clearpage
 \question*{Encryption Mode --- Corrupted Cipher Text}
 I suspect that using ECB on the corrupted cipher text will have the most
 recoverable text, as there is no feedback, so the bit error will not propagate
@@ -70,7 +71,8 @@ total of 446 characters).
     a plaintext must be strictly less than a multiple of the block size to have
     a corresponding ciphertext of that size.
 
-    \questionpart{} I chose to use the AES cipher for this exercise. The ECB and
+    \questionpart{} I chose to use the AES cipher for this exercise. The ECB
+    and
     CBC modes of encryption required padding. I verified this by comparing the
     size in bytes of the plaintext and the ciphertext from each mode. CFB and
     OFB don't require padding because the encryption method is used only to
@@ -78,12 +80,46 @@ total of 446 characters).
     doesn't require that the message be an integer-multiple of a block size.
 \end{arabicparts}
 
+\clearpage
 \question*{Programming using the Crypto Library}
 
-I was able to implement this using some file reading, looping, and using the EVP
+I was able to implement this using some file reading, looping, and using the
+EVP
 interface. In the end, the word that generated the same ciphertext with the
 given parameters was \code{median}. Once my program found this, I was able to
 verify the result using the \code{openssl} command line program.
+
+Below is the code that I used to determine the word that was used for the key
+during the encryption:
+
+\begin{center}
+    \begin{minipage}{4.5in}
+        \definecolor{codegreen}{rgb}{0,0.6,0}
+        \definecolor{codegray}{rgb}{0.5,0.5,0.5}
+        \definecolor{codepurple}{rgb}{0.58,0,0.82}
+        \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+        \lstdefinestyle{python}{
+            belowcaptionskip=1\baselineskip,
+            breaklines=true,
+            frame=single,
+            numbers=none,
+            basicstyle=\tiny\ttfamily,
+            backgroundcolor=\color{white},
+            keywordstyle=\color{magenta},
+            commentstyle=\color{codegreen},
+            stringstyle=\color{codepurple},
+            showspaces=false,
+            showstringspaces=false,
+        }
+        \lstinputlisting[
+            caption=Source code,
+            % label={lst:listing-python},
+            language=Python,
+            style=python,
+        ]{./task5/main.py}
+    \end{minipage}
+\end{center}
 
 \question*{Pseudo Random Number Generation}
 \begin{alphaparts}
