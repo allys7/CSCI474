@@ -84,9 +84,19 @@ total of 446 characters).
 \begin{alphaparts}
     \questionpart{Measure the Entropy of Kernel}
 
+    When measuring the entropy on Isengard, I got a value right around 3500.
+    After clicking and typing the value would increase. The more I typed, the
+    more the value would increase.
+
     \questionpart{Get Pseudo Random Numbers from \code{/dev/random}}
 
+    By typing and moving the mouse around more, you can increase the entropy of
+    a system enough to unblock \code{/dev/random}.
+
     \questionpart{Get Random Numbers from \code{/dev/urandom}}
+
+    I wasn't able to get \code{/dev/urandom} to block when running the command.
+    In fact, the entropy of the system increased some from typing it in.
 \end{alphaparts}
 
 \end{document}
