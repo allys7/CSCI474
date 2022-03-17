@@ -1,4 +1,4 @@
-\documentclass[11pt,largemargins]{homework}
+\documentclass[12pt,largemargins]{homework}
 \usepackage{subcaption}
 \usepackage{caption}
 \usepackage{float}
@@ -79,6 +79,11 @@ total of 446 characters).
 \end{arabicparts}
 
 \question*{Programming using the Crypto Library}
+
+I was able to implement this using some file reading, looping, and using the EVP
+interface. In the end, the word that generated the same ciphertext with the
+given parameters was \code{median}. Once my program found this, I was able to
+verify the result using the \code{openssl} command line program.
 
 \question*{Pseudo Random Number Generation}
 \begin{alphaparts}
