@@ -3,4 +3,4 @@ LIB := /usr/local/opt/openssl/lib/
 
 all:
 	echo $(INC)
-	gcc -I$(INC) -L$(LIB) -o task4.o task4.c -lcrypto
+	gcc -I$(INC) -L$(LIB) -o task4.o Crypto-lab6-digt.c -lcrypto
