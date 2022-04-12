@@ -3,27 +3,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-void getHash(char *hashname, char *msg, unsigned char *md_value) {
-  EVP_MD_CTX *ctx;
-  const EVP_MD *md;
-  // unsigned char md_value[EVP_MAX_MD_SIZE];
-  int md_len, i;
+int hash_message(char *hashname, char *msg, unsigned char *md_value) {
   OpenSSL_add_all_digests();
-  md = EVP_get_digestbyname(hashname);
-  if (!md) {
-    printf("Unknown message digest %s\n", hashname);
-    exit(1);
-  }
-  ctx = EVP_MD_CTX_create();
+  EVP_MD_CTX *ctx = EVP_MD_CTX_create();
+  const EVP_MD *md = EVP_get_digestbyname(hashname);
+  int len, i;
   EVP_DigestInit_ex(ctx, md, NULL);
   EVP_DigestUpdate(ctx, msg, strlen(msg));
-  EVP_DigestFinal_ex(ctx, md_value, &md_len);
+  EVP_DigestFinal_ex(ctx, md_value, &len);
   EVP_MD_CTX_destroy(ctx);
-  // shrink the digest's length to 24 (3 words)
-  // strncpy( digt, md_value, 3);
+  return len;
 }
 
-void setRndStr(char *msg) {
+void generate_random_string(char *msg) {
   int i;
   for (i = 0; i < 11; i++)
     msg[i] = rand() % 256 - 128;
@@ -31,54 +23,53 @@ void setRndStr(char *msg) {
 
 int crackOneWayHash(char *hashname) {
   char msg1[11], msg2[11];
-  unsigned char digt1[EVP_MAX_MD_SIZE], digt2[EVP_MAX_MD_SIZE];
-  // we do not need to generate words, instead generating number only
+  unsigned char hash1[EVP_MAX_MD_SIZE], hash2[EVP_MAX_MD_SIZE];
   int count = 0, i;
-  setRndStr(msg1);
-  // sprintf(msg1, "%d", rand());	// convert to string
+  generate_random_string(msg1);
   //  get an initial message
-  getHash(hashname, msg1, digt1);
-  // run the crack
-  do {
-    // sprintf(msg2, "%d", rand());	// convert to string
-    setRndStr(msg2);
-    getHash(hashname, msg2, digt2);
+  int len1 = hash_message(hashname, msg1, hash1);
+
+  // loop to crack hash
+  int len2, compareLen = len1;
+  while (!count || strncmp(hash1, hash2, compareLen) != 0) {
+    generate_random_string(msg2);
+    len2 = hash_message(hashname, msg2, hash2);
     count++;
-  } while (strncmp(digt1, digt2, 3) != 0);
-  // printf("\n cracked after %d tries! %s and %s has same digest ", count,
-  // msg1, msg2);
-  printf("cracked after %d tries! same digest ", count, msg1, msg2);
+    compareLen = (len1 < len2) ? len1 : len2;
+  }
+  printf("cracked after %d tries!", count);
   for (i = 0; i < 3; i++)
-    printf("%02x", digt1[i]);
-  printf("\n");
+    printf("%02x", hash1[i]);
+  printf("\r\n");
   return count;
 }
 
 int crackCollisionHash(char *hashname) {
   char msg1[11], msg2[11];
-  unsigned char digt1[EVP_MAX_MD_SIZE], digt2[EVP_MAX_MD_SIZE];
-  // we do not need to generate words, instead generating number only
-  int count = 0, i;
-  // run the crack
-  do {
+  unsigned char hash1[EVP_MAX_MD_SIZE], hash2[EVP_MAX_MD_SIZE];
+  int count = 0;
+  // crack the hash
+  int len1, len2, compareLen = 3;
+  while (!count || strncmp(hash1, hash2, compareLen) != 0) {
     // sprintf(msg1, "%d", rand());	// convert to string
-    setRndStr(msg1);
-    getHash(hashname, msg1, digt1);
+    generate_random_string(msg1);
+    len1 = hash_message(hashname, msg1, hash1);
     // sprintf(msg2, "%d", rand());	// convert to string
-    setRndStr(msg2);
-    getHash(hashname, msg2, digt2);
+    generate_random_string(msg2);
+    len2 = hash_message(hashname, msg2, hash2);
+    compareLen = (len1 < len2) ? len1 : len2;
     count++;
-  } while (strncmp(digt1, digt2, 3) != 0);
+  }
   // printf("\n cracked after %d tries! %s and %s has same digest ", count,
   // msg1, msg2);
   printf("cracked after %d tries! same digest ", count);
-  for (i = 0; i < 3; i++)
-    printf("%02x", digt1[i]);
+  for (int i = 0; i < 3; i++)
+    printf("%02x", hash1[i]);
   printf("\n");
   return count;
 }
 
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
   char *hashname;
   if (!argv[1])
     // set to md5 by default
